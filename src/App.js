@@ -4,10 +4,13 @@ import {useWeb3React} from "@web3-react/core";
 import axios from "axios";
 import {ethers} from "ethers";
 import {injected} from "./connectors";
+import {serializeProject} from "./helpers";
+import ProjectView from "./components/ProjectView";
 
 function App() {
     const {active, account, library, activate, deactivate} = useWeb3React()
     const [contract, setContract] = useState(null)
+    const [projects, setProjects] = useState([])
 
     const connect = async () => {
         try {
@@ -30,17 +33,39 @@ function App() {
     const loadContract = () => {
         axios.get('compiled_contracts/CryptoFundMe.json').then(response => {
             const abi = response.data['abi']
-            setContract(new ethers.Contract('0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab', abi, library))
+            setContract(new ethers.Contract('0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb', abi, library))
         });
+    }
+
+    const fetchProjects = async () => {
+        console.log('Fetching projects')
+        const projects = []
+        const projectsCount = await contract.projectsCount()
+        for (let projectIndex = 0; projectIndex < projectsCount; projectIndex++) {
+            const projectData = await contract.projectByIndex(projectIndex)
+            projects.push(serializeProject(projectData))
+        }
+        setProjects(projects)
     }
 
     // automatically load contract when library (w3 provider) is loaded
     useEffect(() => {
         if (library) {
-            console.log('loading contract')
+            console.log('Loading contract')
             loadContract()
         }
     }, [library])
+
+    useEffect(() => {
+        if (contract) {
+            console.log(contract)
+            fetchProjects()
+        }
+    }, [contract])
+
+    const projectViews = projects.map((project) => {
+        return <ProjectView key={project.id} project={project}/>
+    })
 
     return (
         <div className="App">
@@ -70,6 +95,11 @@ function App() {
                     </div>
                 </div>
             </nav>
+            <div className={'container-fluid'}>
+                <div className={'row pt-3'}>
+                    {projectViews}
+                </div>
+            </div>
         </div>
     );
 }
