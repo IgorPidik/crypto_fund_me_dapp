@@ -1,16 +1,18 @@
 import './App.css';
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useWeb3React} from "@web3-react/core";
 import axios from "axios";
 import {ethers} from "ethers";
 import {injected} from "./connectors";
 import {serializeProject} from "./helpers";
-import ProjectView from "./components/ProjectView";
+import ProjectCardView from "./components/ProjectCardView";
+import ProjectModal from "./components/ProjectModal";
 
 function App() {
     const {active, account, library, activate, deactivate} = useWeb3React()
     const [contract, setContract] = useState(null)
     const [projects, setProjects] = useState([])
+    const [modalProject, setModalProject] = useState(null)
 
     const connect = async () => {
         try {
@@ -33,7 +35,7 @@ function App() {
     const loadContract = () => {
         axios.get('compiled_contracts/CryptoFundMe.json').then(response => {
             const abi = response.data['abi']
-            setContract(new ethers.Contract('0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb', abi, library))
+            setContract(new ethers.Contract('0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab', abi, library))
         });
     }
 
@@ -63,8 +65,19 @@ function App() {
         }
     }, [contract])
 
-    const projectViews = projects.map((project) => {
-        return <ProjectView key={project.id} project={project}/>
+    const projectClicked = (projectIndex) => {
+        console.log('clicked', projectIndex)
+        setModalProject(projects[projectIndex])
+    }
+
+    const handleProjectModalClosed = () => {
+        setModalProject(null)
+    }
+
+    const projectViews = projects.map((project, index) => {
+        return (<div className="col-3" key={project.id}>
+            <ProjectCardView project={project} onClick={() => projectClicked(index)}/>
+        </div>)
     })
 
     return (
@@ -95,11 +108,12 @@ function App() {
                     </div>
                 </div>
             </nav>
-            <div className={'container-fluid'}>
-                <div className={'row pt-3'}>
+            <div className="container-fluid">
+                <div className="row pt-3">
                     {projectViews}
                 </div>
             </div>
+            <ProjectModal project={modalProject} onClose={handleProjectModalClosed}/>
         </div>
     );
 }
