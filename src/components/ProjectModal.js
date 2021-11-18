@@ -2,6 +2,7 @@ import React from "react";
 import {Modal} from "react-bootstrap";
 import {ethers} from "ethers";
 import {useWeb3React} from "@web3-react/core";
+import DonationForm from "./DonationForm";
 
 
 function ProjectModal(props) {
@@ -12,18 +13,26 @@ function ProjectModal(props) {
         return null
     }
 
-    const isOwner = account === project.owner
+    // const isOwner = account === project.owner
+    const isOwner = true
     return (
-        <Modal show={true} onHide={props.onClose} centered>
-            <Modal.Header closeButton>
+        <Modal show={true} onHide={props.onClose} centered contentClassName="bg-dark text-light">
+            <Modal.Header>
                 <Modal.Title className="flex-grow-1 text-center">{project.name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {project.description}
             </Modal.Body>
+            <Modal.Footer className="justify-content-center">
+                <DonationForm/>
+            </Modal.Footer>
             <Modal.Footer className="justify-content-start">
                 {isOwner && <>
-                    <span>Current balance: {ethers.utils.formatEther(project.balance)} ETH</span>
+                    <div className="d-flex flex-row flex-grow-1 align-items-center justify-content-between">
+                        <span>Current balance: {ethers.utils.formatEther(project.balance)} ETH</span>
+                        <a className="btn btn-link text-decoration-none p-0"
+                           onClick={() => props.onWithdraw(project.id)}>Withdraw</a>
+                    </div>
                     <br/>
                 </>}
                 <span>Total funding: {ethers.utils.formatEther(project.totalDonations)} ETH</span>
