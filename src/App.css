@@ -8,3 +8,25 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+.black-input {
+    background-color: black !important;
+    color: white !important;
+    border: black;
+}
+
+.no-selection-effects {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Hide arrows in number input forms*/
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

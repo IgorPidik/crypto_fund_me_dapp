@@ -74,6 +74,12 @@ function App() {
         setModalProject(null)
     }
 
+    const handleWithdraw = (projectId) => {
+        console.log('withdraw', projectId)
+        const project = projects.find(project => project.id === projectId)
+        console.log(project)
+    }
+
     const projectViews = projects.map((project, index) => {
         return (<div className="col-3" key={project.id}>
             <ProjectCardView project={project} onClick={() => projectClicked(index)}/>
@@ -113,7 +119,8 @@ function App() {
                     {projectViews}
                 </div>
             </div>
-            <ProjectModal project={modalProject} onClose={handleProjectModalClosed}/>
+            <ProjectModal project={modalProject} onWithdraw={handleWithdraw}
+                          onClose={handleProjectModalClosed}/>
         </div>
     );
 }
