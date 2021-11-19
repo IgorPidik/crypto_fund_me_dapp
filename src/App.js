@@ -80,6 +80,10 @@ function App() {
         console.log(project)
     }
 
+    const handleDonation = (projectId, wei) => {
+        console.log('donation', projectId, wei)
+    }
+
     const projectViews = projects.map((project, index) => {
         return (<div className="col-3" key={project.id}>
             <ProjectCardView project={project} onClick={() => projectClicked(index)}/>
@@ -119,7 +123,7 @@ function App() {
                     {projectViews}
                 </div>
             </div>
-            <ProjectModal project={modalProject} onWithdraw={handleWithdraw}
+            <ProjectModal project={modalProject} onWithdraw={handleWithdraw} onDonate={handleDonation}
                           onClose={handleProjectModalClosed}/>
         </div>
     );

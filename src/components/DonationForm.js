@@ -11,15 +11,14 @@ function DonationForm(props) {
         return <option key={currency} value={currency}>{currency}</option>
     })
 
-    const handleDonatePressed = () => {
+    const handleDonation = () => {
         let wei
         if (selectedCurrency === 'eth') {
             wei = ethers.utils.parseEther(donationAmount)
         } else {
             wei = ethers.BigNumber.from(donationAmount)
         }
-        console.log(wei)
-        console.log(wei.toString())
+        props.onDonate(wei)
     }
 
     const handleInputChanged = (event) => {
@@ -42,7 +41,7 @@ function DonationForm(props) {
             <div className="input-group-append ms-2">
                 <button className="btn btn-success no-selection-effects" type="button"
                         disabled={!donationAmount}
-                        onClick={handleDonatePressed}>Donate
+                        onClick={handleDonation}>Donate
                 </button>
             </div>
         </div>

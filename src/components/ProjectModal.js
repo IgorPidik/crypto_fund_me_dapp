@@ -1,16 +1,18 @@
 import React from "react";
 import {Modal} from "react-bootstrap";
 import {ethers} from "ethers";
-import {useWeb3React} from "@web3-react/core";
 import DonationForm from "./DonationForm";
 
 
 function ProjectModal(props) {
-    const {account} = useWeb3React()
     const project = props.project
 
     if (!project) {
         return null
+    }
+
+    const onHandleDonation = (wei) => {
+        props.onDonate(project.id, wei)
     }
 
     // const isOwner = account === project.owner
@@ -24,7 +26,7 @@ function ProjectModal(props) {
                 {project.description}
             </Modal.Body>
             <Modal.Footer className="justify-content-center">
-                <DonationForm/>
+                <DonationForm onDonate={onHandleDonation}/>
             </Modal.Footer>
             <Modal.Footer className="justify-content-start">
                 {isOwner && <>
