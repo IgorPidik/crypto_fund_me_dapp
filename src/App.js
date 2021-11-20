@@ -89,6 +89,12 @@ function App() {
 
     const handleCreateProject = (title, description) => {
         setShowCreateProjectModal(false)
+        contract?.createProject(title, description).then(tx => {
+            tx.wait().then(_ => {
+                // TODO: create event in contract and then read the newest project id instead of re-fetching all of them
+                fetchProjects()
+            })
+        })
     }
 
     const projectViews = projects.map((project, index) => {
@@ -104,11 +110,13 @@ function App() {
                     <Navbar.Brand href="#home">CryptoFundMe</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
+                        {active &&
+                        <Nav>
                             <Nav.Link onClick={() => setShowCreateProjectModal(true)}>Create project</Nav.Link>
                         </Nav>
-                        <Nav>
-                            {account ?
+                        }
+                        <Nav className="ms-auto">
+                            {active ?
                                 <NavDropdown title={account} align="end">
                                     <NavDropdown.Item>My Projects</NavDropdown.Item>
                                     <NavDropdown.Divider/>
