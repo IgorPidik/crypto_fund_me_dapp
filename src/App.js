@@ -14,7 +14,7 @@ function App() {
     const {active, account, library, activate, deactivate} = useWeb3React()
     const [contract, setContract] = useState(null)
     const [projects, setProjects] = useState([])
-    const [modalProject, setModalProject] = useState(null)
+    const [modalProjectIndex, setModalProjectIndex] = useState(null)
     const [showCreateProjectModal, setShowCreateProjectModal] = useState(false)
 
     const connect = async () => {
@@ -69,22 +69,31 @@ function App() {
     }, [contract])
 
     const projectClicked = (projectIndex) => {
-        console.log('clicked', projectIndex)
-        setModalProject(projects[projectIndex])
-    }
-
-    const handleProjectModalClosed = () => {
-        setModalProject(null)
+        setModalProjectIndex(projectIndex)
     }
 
     const handleWithdraw = (projectId) => {
         console.log('withdraw', projectId)
         const project = projects.find(project => project.id === projectId)
         console.log(project)
+        contract?.withdrawProjectDonations(projectId).then(tx => {
+            tx.wait().then(_ => {
+                // TODO: refresh this specific project rather than refreshing all of them
+                fetchProjects()
+            })
+        })
     }
 
     const handleDonation = (projectId, wei) => {
-        console.log('donation', projectId, wei)
+        const overrides = {
+            value: wei
+        }
+        contract?.fundProject(projectId, overrides).then(tx => {
+            tx.wait().then(_ => {
+                // TODO: refresh this specific project rather than refreshing all of them
+                fetchProjects()
+            })
+        })
     }
 
     const handleCreateProject = (title, description) => {
@@ -103,6 +112,7 @@ function App() {
         </div>)
     })
 
+    const modalProject = modalProjectIndex !== null ? projects[modalProjectIndex] : null
     return (
         <div className="App">
             <Navbar bg="dark" variant="dark" expand="lg">
@@ -135,7 +145,7 @@ function App() {
             </Container>
 
             <ProjectModal project={modalProject} onWithdraw={handleWithdraw} onDonate={handleDonation}
-                          onClose={handleProjectModalClosed}/>
+                          onClose={() => setModalProjectIndex(null)}/>
             <CreateProjectModal show={showCreateProjectModal} onClose={() => setShowCreateProjectModal(false)}
                                 onCreateProject={handleCreateProject}/>
         </div>
