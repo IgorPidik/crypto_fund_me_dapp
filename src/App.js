@@ -29,6 +29,8 @@ function App() {
     const disconnect = () => {
         try {
             deactivate()
+            setContract(null)
+            setProjects([])
         } catch (ex) {
             console.log(ex)
         }
