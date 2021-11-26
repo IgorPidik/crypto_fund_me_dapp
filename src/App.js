@@ -40,7 +40,7 @@ function App() {
     const loadContract = () => {
         axios.get('compiled_contracts/CryptoFundMe.json').then(response => {
             const abi = response.data['abi']
-            setContract(new ethers.Contract('0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab', abi, library.getSigner(account)))
+            setContract(new ethers.Contract(process.env.REACT_APP_CONTRACT_ADDRESS, abi, library.getSigner(account)))
         });
     }
 
